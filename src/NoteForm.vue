@@ -1,16 +1,16 @@
 <template>
   <div>
     <!-- <div class="input-wrapper"> -->
-    <div v-if="currentNote" class="input-wrapper">
+    <div v-if="$store.currentNote.active" class="input-wrapper">
       <input ref="title"
-        v-model="currentNote.title"
+        v-model="$store.currentNote.title"
         type="text"
         :disabled="updating"
         placeholder="title"
       />
       <textarea
         ref="content"
-        v-model="currentNote.content"
+        v-model="$store.currentNote.content"
         :disabled="updating"
         placeholder="note content"
       />
@@ -40,7 +40,7 @@ export default {
     };
   },
   props: {
-    currentNote: null,
+    // currentNote: null,
     // currentNote: null,
   },
   methods: {

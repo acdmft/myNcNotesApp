@@ -45,7 +45,7 @@
       </ul>
     </NcAppNavigation>
     <NcAppContent>
-      <NoteForm :currentNote="currentNote" @saveNote="handleNoteSubmit"/>
+      <NoteForm  @saveNote="handleNoteSubmit"/>
       <p v-if="$store.state.sillyState">sillyState - false</p>
       <p v-else>sillyState - true</p>
       <!-- <NoteForm @saveNote="handleNoteSubmit"/> -->

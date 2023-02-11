@@ -5,7 +5,11 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
   state: {
-    sillyState: false,
+    currentNote: {
+      active: false,
+      title: "",
+      content: "",
+    }
   }, 
   mutations: {
     

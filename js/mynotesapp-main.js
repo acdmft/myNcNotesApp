@@ -20068,10 +20068,9 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   props: {
-    currentNote: null
+    // currentNote: null,
     // currentNote: null,
   },
-
   methods: {
     handleClick: function handleClick() {
       // crée l'objet note
@@ -20160,9 +20159,6 @@ var render = function render() {
       }
     }, [_vm._v("\n            " + _vm._s(_vm.t("mynotesapp", "Delete note")) + "\n            ")])], 1)], 2)], 1);
   }), 0)], 1), _vm._v(" "), _c("NcAppContent", [_c("NoteForm", {
-    attrs: {
-      currentNote: _vm.currentNote
-    },
     on: {
       saveNote: _vm.handleNoteSubmit
     }
@@ -20189,14 +20185,14 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", [_vm.currentNote ? _c("div", {
+  return _c("div", [_vm.$store.currentNote.active ? _c("div", {
     staticClass: "input-wrapper"
   }, [_c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.currentNote.title,
-      expression: "currentNote.title"
+      value: _vm.$store.currentNote.title,
+      expression: "$store.currentNote.title"
     }],
     ref: "title",
     attrs: {
@@ -20205,20 +20201,20 @@ var render = function render() {
       placeholder: "title"
     },
     domProps: {
-      value: _vm.currentNote.title
+      value: _vm.$store.currentNote.title
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.currentNote, "title", $event.target.value);
+        _vm.$set(_vm.$store.currentNote, "title", $event.target.value);
       }
     }
   }), _vm._v(" "), _c("textarea", {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.currentNote.content,
-      expression: "currentNote.content"
+      value: _vm.$store.currentNote.content,
+      expression: "$store.currentNote.content"
     }],
     ref: "content",
     attrs: {
@@ -20226,12 +20222,12 @@ var render = function render() {
       placeholder: "note content"
     },
     domProps: {
-      value: _vm.currentNote.content
+      value: _vm.$store.currentNote.content
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.currentNote, "content", $event.target.value);
+        _vm.$set(_vm.$store.currentNote, "content", $event.target.value);
       }
     }
   }), _vm._v(" "), _c("input", {
@@ -20276,7 +20272,11 @@ __webpack_require__.r(__webpack_exports__);
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].use(vuex__WEBPACK_IMPORTED_MODULE_1__["default"]);
 var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
   state: {
-    sillyState: false
+    currentNote: {
+      active: false,
+      title: "",
+      content: ""
+    }
   },
   mutations: {}
 });
@@ -61142,4 +61142,4 @@ vue__WEBPACK_IMPORTED_MODULE_3__["default"].config.devtools = true;
 
 /******/ })()
 ;
-//# sourceMappingURL=mynotesapp-main.js.map?v=5667d4ab3705950ebd0a
+//# sourceMappingURL=mynotesapp-main.js.map?v=39a10a2330b5c3a9dfea
