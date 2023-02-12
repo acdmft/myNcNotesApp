@@ -19821,7 +19821,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     return {
       notes: [],
       // notes => est réservée pour LE Composant. Il faut que la data soit partagées. Ça fait appel à la notion de "store".
-      currentNoteId: null,
+      // currentNoteId: null,
       // currentNote: {
       //   title: "Baptiste",
       //   content: "C'est ma note."
@@ -19835,29 +19835,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
      * Return the currently selected note object
      * @returns {Object|null}
      */
-    currentNote: function currentNote() {
-      var _this = this;
-      if (this.currentNoteId === null) {
-        return null;
-      }
-      // this.currentNote = this.notes.find((note) => note.id === this.currentNoteId)
-      return this.notes.find(function (note) {
-        return note.id === _this.currentNoteId;
-      });
-    },
+    // currentNote() {
+    //   if (this.currentNoteId === null) {
+    //     return null;
+    //   }
+    //   // this.currentNote = this.notes.find((note) => note.id === this.currentNoteId)
+    //   return this.notes.find((note) => note.id === this.currentNoteId);
+    // },
+
     /**
      * Returns true if a note is selected and its title is not empty
      * @returns {Boolean}
      */
-    savePossible: function savePossible() {
-      return this.currentNote && this.currentNote.title !== "";
-    }
+    // savePossible() {
+    //   return this.$store.state.currentNote.active && this.$store.state.currentNote.title !== "";
+    // },
   },
   /**
    * Fetch list of notes when the component is loaded
    */
   mounted: function mounted() {
-    var _this2 = this;
+    var _this = this;
     return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
       var response;
       return _regeneratorRuntime().wrap(function _callee$(_context) {
@@ -19868,7 +19866,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_10__["default"].get((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_8__.generateUrl)("/apps/mynotesapp/notes"));
           case 3:
             response = _context.sent;
-            _this2.notes = response.data;
+            _this.notes = response.data;
             _context.next = 11;
             break;
           case 7:
@@ -19877,7 +19875,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
             console.error(_context.t0);
             (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_9__.showError)(t("notestutorial", "Could not fetch notes"));
           case 11:
-            _this2.loading = false;
+            _this.loading = false;
           case 12:
           case "end":
             return _context.stop();
@@ -19891,13 +19889,13 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
      * @param {Object} note Note object
      */
     openNote: function openNote(note) {
-      var _this3 = this;
+      var _this2 = this;
       if (this.updating) {
         return;
       }
-      this.currentNoteId = note.id;
+      this.$store.state.currentNote.id = note.id;
       this.$nextTick(function () {
-        _this3.$refs.content.focus();
+        _this2.$refs.content.focus();
       });
     },
     /**
@@ -19905,10 +19903,10 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
      * create a new note or save
      */
     handleNoteSubmit: function handleNoteSubmit() {
-      if (this.currentNoteId === -1) {
-        this.createNote(this.currentNote);
+      if (this.$store.state.currentNote.id === -1) {
+        this.createNote(this.$store.state.currentNote);
       } else {
-        this.updateNote(this.currentNote);
+        this.updateNote(this.$store.state.currentNote);
       }
     },
     /**
@@ -19917,16 +19915,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
      * has been persisted in the backend
      */
     newNote: function newNote() {
-      var _this4 = this;
-      if (this.currentNoteId !== -1) {
-        this.currentNoteId = -1;
+      var _this3 = this;
+      if (this.$store.state.currentNote.id !== -1) {
+        this.$store.state.currentNote.id = -1;
+        this.$store.state.currentNote.active = true;
         this.notes.push({
           id: -1,
           title: "",
           content: ""
         });
         this.$nextTick(function () {
-          _this4.$refs.title.focus();
+          _this3.$refs.title.focus();
         });
       }
     },
@@ -19937,30 +19936,30 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       this.notes.splice(this.notes.findIndex(function (note) {
         return note.id === -1;
       }), 1);
-      this.currentNoteId = null;
+      this.$store.state.currentNote.id = null;
     },
     /**
      * Create a new note by sending the information to the server
      * @param {Object} note Note object
      */
     createNote: function createNote(note) {
-      var _this5 = this;
+      var _this4 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
         var response, index;
         return _regeneratorRuntime().wrap(function _callee2$(_context2) {
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
-              _this5.updating = true;
+              _this4.updating = true;
               _context2.prev = 1;
               _context2.next = 4;
               return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_10__["default"].post((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_8__.generateUrl)("/apps/mynotesapp/notes"), note);
             case 4:
               response = _context2.sent;
-              index = _this5.notes.findIndex(function (match) {
-                return match.id === _this5.currentNoteId;
+              index = _this4.notes.findIndex(function (match) {
+                return match.id === _this4.$store.state.currentNote.id;
               });
-              _this5.$set(_this5.notes, index, response.data);
-              _this5.currentNoteId = response.data.id;
+              _this4.$set(_this4.notes, index, response.data);
+              _this4.$store.state.currentNote.id = response.data.id;
               _context2.next = 14;
               break;
             case 10:
@@ -19969,7 +19968,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               console.error(_context2.t0);
               (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_9__.showError)(t("notestutorial", "Could not create the note"));
             case 14:
-              _this5.updating = false;
+              _this4.updating = false;
             case 15:
             case "end":
               return _context2.stop();
@@ -19982,12 +19981,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
      * @param {Object} note Note object
      */
     updateNote: function updateNote(note) {
-      var _this6 = this;
+      var _this5 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              _this6.updating = true;
+              _this5.updating = true;
               _context3.prev = 1;
               _context3.next = 4;
               return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_10__["default"].put((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_8__.generateUrl)("/apps/mynotesapp/notes/".concat(note.id)), note);
@@ -20000,7 +19999,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               console.error(_context3.t0);
               (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_9__.showError)(t("notestutorial", "Could not update the note"));
             case 10:
-              _this6.updating = false;
+              _this5.updating = false;
             case 11:
             case "end":
               return _context3.stop();
@@ -20013,7 +20012,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
      * @param {Object} note Note object
      */
     deleteNote: function deleteNote(note) {
-      var _this7 = this;
+      var _this6 = this;
       return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
@@ -20022,9 +20021,9 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _context4.next = 3;
               return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_10__["default"]["delete"]((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_8__.generateUrl)("/apps/mynotesapp/notes/".concat(note.id)));
             case 3:
-              _this7.notes.splice(_this7.notes.indexOf(note), 1);
-              if (_this7.currentNoteId === note.id) {
-                _this7.currentNoteId = null;
+              _this6.notes.splice(_this6.notes.indexOf(note), 1);
+              if (_this6.$store.state.currentNote.id === note.id) {
+                _this6.$store.state.currentNote.id = null;
               }
               (0,_nextcloud_dialogs__WEBPACK_IMPORTED_MODULE_9__.showSuccess)(t("mynotesapp", "Note deleted"));
               _context4.next = 12;
@@ -20118,7 +20117,7 @@ var render = function render() {
     return _c("div", [_c("NcCounterBubble", [_vm._v("42+")]), _vm._v(" "), _c("NcAppNavigationItem", {
       key: note.id,
       class: {
-        active: _vm.currentNoteId === note.id
+        active: _vm.$store.state.currentNote.id === note.id
       },
       attrs: {
         name: note.title ? note.title : _vm.t("mynotesapp", "New note")
@@ -20139,7 +20138,7 @@ var render = function render() {
           return _vm.cancelNewNote(note);
         }
       }
-    }, [_vm._v("\n                  " + _vm._s(_vm.t("mynotesapp", "Cancel note creation")) + "\n                ")]) : _c("NcActionButton", {
+    }, [_vm._v("\n              " + _vm._s(_vm.t("mynotesapp", "Cancel note creation")) + "\n            ")]) : _c("NcActionButton", {
       attrs: {
         icon: "icon-star"
       },
@@ -20148,7 +20147,7 @@ var render = function render() {
           return _vm.deleteNote(note);
         }
       }
-    }, [_vm._v("\n                  " + _vm._s(_vm.t("mynotesapp", "Add to favorites")) + "\n            ")]), _vm._v(" "), _c("NcActionButton", {
+    }, [_vm._v("\n              " + _vm._s(_vm.t("mynotesapp", "Add to favorites")) + "\n            ")]), _vm._v(" "), _c("NcActionButton", {
       attrs: {
         icon: "icon-delete"
       },
@@ -20157,12 +20156,12 @@ var render = function render() {
           return _vm.deleteNote(note);
         }
       }
-    }, [_vm._v("\n            " + _vm._s(_vm.t("mynotesapp", "Delete note")) + "\n            ")])], 1)], 2)], 1);
+    }, [_vm._v("\n              " + _vm._s(_vm.t("mynotesapp", "Delete note")) + "\n            ")])], 1)], 2)], 1);
   }), 0)], 1), _vm._v(" "), _c("NcAppContent", [_c("NoteForm", {
     on: {
       saveNote: _vm.handleNoteSubmit
     }
-  }), _vm._v(" "), _vm.$store.state.sillyState ? _c("p", [_vm._v("sillyState - false")]) : _c("p", [_vm._v("sillyState - true")])], 1)], 1);
+  })], 1)], 1);
 };
 var staticRenderFns = [];
 render._withStripped = true;
@@ -20185,14 +20184,16 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", [_vm.$store.currentNote.active ? _c("div", {
+  return _c("div", {
+    staticClass: "input-wrapper"
+  }, [_vm.$store.state.currentNote.active ? _c("div", {
     staticClass: "input-wrapper"
   }, [_c("input", {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.$store.currentNote.title,
-      expression: "$store.currentNote.title"
+      value: _vm.$store.state.currentNote.title,
+      expression: "$store.state.currentNote.title"
     }],
     ref: "title",
     attrs: {
@@ -20201,20 +20202,20 @@ var render = function render() {
       placeholder: "title"
     },
     domProps: {
-      value: _vm.$store.currentNote.title
+      value: _vm.$store.state.currentNote.title
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.$store.currentNote, "title", $event.target.value);
+        _vm.$set(_vm.$store.state.currentNote, "title", $event.target.value);
       }
     }
   }), _vm._v(" "), _c("textarea", {
     directives: [{
       name: "model",
       rawName: "v-model",
-      value: _vm.$store.currentNote.content,
-      expression: "$store.currentNote.content"
+      value: _vm.$store.state.currentNote.content,
+      expression: "$store.state.currentNote.content"
     }],
     ref: "content",
     attrs: {
@@ -20222,12 +20223,12 @@ var render = function render() {
       placeholder: "note content"
     },
     domProps: {
-      value: _vm.$store.currentNote.content
+      value: _vm.$store.state.currentNote.content
     },
     on: {
       input: function input($event) {
         if ($event.target.composing) return;
-        _vm.$set(_vm.$store.currentNote, "content", $event.target.value);
+        _vm.$set(_vm.$store.state.currentNote, "content", $event.target.value);
       }
     }
   }), _vm._v(" "), _c("input", {
@@ -20270,11 +20271,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 vue__WEBPACK_IMPORTED_MODULE_0__["default"].use(vuex__WEBPACK_IMPORTED_MODULE_1__["default"]);
-var store = new vuex__WEBPACK_IMPORTED_MODULE_1__["default"].Store({
+var store = new vuex__WEBPACK_IMPORTED_MODULE_1__.Store({
   state: {
     currentNote: {
+      id: null,
       active: false,
-      title: "",
+      title: "ttt",
       content: ""
     }
   },
@@ -61142,4 +61144,4 @@ vue__WEBPACK_IMPORTED_MODULE_3__["default"].config.devtools = true;
 
 /******/ })()
 ;
-//# sourceMappingURL=mynotesapp-main.js.map?v=39a10a2330b5c3a9dfea
+//# sourceMappingURL=mynotesapp-main.js.map?v=2be5004c40ad92909a6a

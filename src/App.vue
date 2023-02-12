@@ -17,38 +17,34 @@
           <NcAppNavigationItem
             :key="note.id"
             :name="note.title ? note.title : t('mynotesapp', 'New note')"
-            :class="{ active: currentNoteId === note.id }"
+            :class="{ active: $store.state.currentNote.id === note.id }"
             @click="openNote(note)"
           >
             <template slot="actions">
-                  <NcActionButton
-                    v-if="note.id === -1"
-                    icon="icon-close"
-                    @click="cancelNewNote(note)"
-                  >
-                    {{ t("mynotesapp", "Cancel note creation") }}
-                  </NcActionButton>            
-              <!-- <div v-else> -->
-              <NcActionButton v-else
-                icon="icon-star"
-                @click="deleteNote(note)">
-                    {{ t("mynotesapp", "Add to favorites") }}
+              <NcActionButton
+                v-if="note.id === -1"
+                icon="icon-close"
+                @click="cancelNewNote(note)"
+              >
+                {{ t("mynotesapp", "Cancel note creation") }}
+              </NcActionButton>
+              
+              <NcActionButton v-else icon="icon-star" @click="deleteNote(note)">
+                {{ t("mynotesapp", "Add to favorites") }}
               </NcActionButton>
 
               <NcActionButton icon="icon-delete" @click="deleteNote(note)">
-              {{ t("mynotesapp", "Delete note") }}
+                {{ t("mynotesapp", "Delete note") }}
               </NcActionButton>
-
             </template>
           </NcAppNavigationItem>
         </div>
       </ul>
     </NcAppNavigation>
     <NcAppContent>
-      <NoteForm  @saveNote="handleNoteSubmit"/>
-      <p v-if="$store.state.sillyState">sillyState - false</p>
-      <p v-else>sillyState - true</p>
-      <!-- <NoteForm @saveNote="handleNoteSubmit"/> -->
+      <NoteForm @saveNote="handleNoteSubmit" />
+      <!-- <p>{{ $store.state.currentNote.title }}</p> -->
+      
     </NcAppContent>
   </div>
 </template>
@@ -59,8 +55,9 @@ import NcAppContent from "@nextcloud/vue/dist/Components/NcAppContent";
 import NcAppNavigation from "@nextcloud/vue/dist/Components/NcAppNavigation";
 import NcAppNavigationItem from "@nextcloud/vue/dist/Components/NcAppNavigationItem";
 import NcAppNavigationNew from "@nextcloud/vue/dist/Components/NcAppNavigationNew";
-import NcCounterBubble from "@nextcloud/vue/dist/Components/NcCounterBubble"
+import NcCounterBubble from "@nextcloud/vue/dist/Components/NcCounterBubble";
 import NoteForm from "./NoteForm.vue";
+
 
 import "@nextcloud/dialogs/styles/toast.scss";
 import { generateUrl } from "@nextcloud/router";
@@ -75,13 +72,14 @@ export default {
     NcAppNavigation,
     NcAppNavigationItem,
     NcAppNavigationNew,
+    
     NcCounterBubble,
     NoteForm,
   },
   data() {
     return {
       notes: [], // notes => est réservée pour LE Composant. Il faut que la data soit partagées. Ça fait appel à la notion de "store".
-      currentNoteId: null,
+      // currentNoteId: null,
       // currentNote: {
       //   title: "Baptiste",
       //   content: "C'est ma note."
@@ -95,21 +93,21 @@ export default {
      * Return the currently selected note object
      * @returns {Object|null}
      */
-    currentNote() {
-      if (this.currentNoteId === null) {
-        return null;
-      }
-      // this.currentNote = this.notes.find((note) => note.id === this.currentNoteId)
-      return this.notes.find((note) => note.id === this.currentNoteId);
-    },
+    // currentNote() {
+    //   if (this.currentNoteId === null) {
+    //     return null;
+    //   }
+    //   // this.currentNote = this.notes.find((note) => note.id === this.currentNoteId)
+    //   return this.notes.find((note) => note.id === this.currentNoteId);
+    // },
 
     /**
      * Returns true if a note is selected and its title is not empty
      * @returns {Boolean}
      */
-    savePossible() {
-      return this.currentNote && this.currentNote.title !== "";
-    },
+    // savePossible() {
+    //   return this.$store.state.currentNote.active && this.$store.state.currentNote.title !== "";
+    // },
   },
   /**
    * Fetch list of notes when the component is loaded
@@ -134,7 +132,7 @@ export default {
       if (this.updating) {
         return;
       }
-      this.currentNoteId = note.id;
+      this.$store.state.currentNote.id = note.id;
       this.$nextTick(() => {
         this.$refs.content.focus();
       });
@@ -144,10 +142,10 @@ export default {
      * create a new note or save
      */
     handleNoteSubmit() {
-      if (this.currentNoteId === -1) {
-        this.createNote(this.currentNote);
+      if (this.$store.state.currentNote.id === -1) {
+        this.createNote(this.$store.state.currentNote);
       } else {
-        this.updateNote(this.currentNote);
+        this.updateNote(this.$store.state.currentNote);
       }
     },
     /**
@@ -156,8 +154,9 @@ export default {
      * has been persisted in the backend
      */
     newNote() {
-      if (this.currentNoteId !== -1) {
-        this.currentNoteId = -1;
+      if (this.$store.state.currentNote.id !== -1) {
+        this.$store.state.currentNote.id = -1;
+        this.$store.state.currentNote.active = true;
         this.notes.push({
           id: -1,
           title: "",
@@ -176,7 +175,7 @@ export default {
         this.notes.findIndex((note) => note.id === -1),
         1
       );
-      this.currentNoteId = null;
+      this.$store.state.currentNote.id = null;
     },
     /**
      * Create a new note by sending the information to the server
@@ -190,10 +189,10 @@ export default {
           note
         );
         const index = this.notes.findIndex(
-          (match) => match.id === this.currentNoteId
+          (match) => match.id === this.$store.state.currentNote.id
         );
         this.$set(this.notes, index, response.data);
-        this.currentNoteId = response.data.id;
+        this.$store.state.currentNote.id = response.data.id;
       } catch (e) {
         console.error(e);
         showError(t("notestutorial", "Could not create the note"));
@@ -222,8 +221,8 @@ export default {
       try {
         await axios.delete(generateUrl(`/apps/mynotesapp/notes/${note.id}`));
         this.notes.splice(this.notes.indexOf(note), 1);
-        if (this.currentNoteId === note.id) {
-          this.currentNoteId = null;
+        if (this.$store.state.currentNote.id === note.id) {
+          this.$store.state.currentNote.id = null;
         }
         showSuccess(t("mynotesapp", "Note deleted"));
       } catch (e) {

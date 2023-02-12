@@ -1,16 +1,16 @@
 <template>
-  <div>
-    <!-- <div class="input-wrapper"> -->
-    <div v-if="$store.currentNote.active" class="input-wrapper">
-      <input ref="title"
-        v-model="$store.currentNote.title"
+  <div class="input-wrapper">
+    <div v-if="$store.state.currentNote.active" class="input-wrapper">
+      <input
+        ref="title"
+        v-model="$store.state.currentNote.title"
         type="text"
         :disabled="updating"
         placeholder="title"
       />
       <textarea
         ref="content"
-        v-model="$store.currentNote.content"
+        v-model="$store.state.currentNote.content"
         :disabled="updating"
         placeholder="note content"
       />
