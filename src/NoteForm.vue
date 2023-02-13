@@ -1,5 +1,5 @@
 <template>
-  <div class="input-wrapper">
+  
     <div v-if="$store.state.currentNote.active" class="input-wrapper">
       <input
         ref="title"
@@ -26,7 +26,6 @@
       <div class="icon-file" />
       <h2>{{ t("mynotesapp", "Hello! You can create new note!") }}</h2>
     </div>
-  </div>
 </template>
 
 <script>
@@ -43,7 +42,23 @@ export default {
     // currentNote: null,
     // currentNote: null,
   },
+  async mounted() {
+    console.log('mounted')
+    this.$nextTick(() => {
+          this.$refs.title.focus();
+        });
+  },
   methods: {
+    openNote(note) {
+      if (this.updating) {
+        return;
+      }
+      this.$store.state.currentNote.id = note.id;
+      this.$nextTick(() => {
+        this.$refs.content.focus();
+      });
+    },
+    
     handleClick() {
       // crée l'objet note
       // const note = { note: "valeur", .. }

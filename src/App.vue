@@ -128,15 +128,7 @@ export default {
      * Create a new note and focus the note content field automatically
      * @param {Object} note Note object
      */
-    openNote(note) {
-      if (this.updating) {
-        return;
-      }
-      this.$store.state.currentNote.id = note.id;
-      this.$nextTick(() => {
-        this.$refs.content.focus();
-      });
-    },
+    
     /**
      * Action tiggered when clicking the save button
      * create a new note or save
@@ -153,7 +145,11 @@ export default {
      * The note is not yet saved, therefore an id of -1 is used until it
      * has been persisted in the backend
      */
-    newNote() {
+    
+    /**
+     * Abort creating a new note
+     */
+     newNote() {
       if (this.$store.state.currentNote.id !== -1) {
         this.$store.state.currentNote.id = -1;
         this.$store.state.currentNote.active = true;
@@ -162,20 +158,16 @@ export default {
           title: "",
           content: "",
         });
-        this.$nextTick(() => {
-          this.$refs.title.focus();
-        });
+        
       }
     },
-    /**
-     * Abort creating a new note
-     */
     cancelNewNote() {
       this.notes.splice(
         this.notes.findIndex((note) => note.id === -1),
         1
       );
       this.$store.state.currentNote.id = null;
+      this.$store.state.currentNote.active = false;
     },
     /**
      * Create a new note by sending the information to the server
