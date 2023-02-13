@@ -42,7 +42,7 @@
       </ul>
     </NcAppNavigation>
     <NcAppContent>
-      <NoteForm @saveNote="handleNoteSubmit" />
+      <NoteForm />
       <!-- <p>{{ $store.state.currentNote.title }}</p> -->
       
     </NcAppContent>
@@ -134,11 +134,7 @@ export default {
      * create a new note or save
      */
     handleNoteSubmit() {
-      if (this.$store.state.currentNote.id === -1) {
-        this.createNote(this.$store.state.currentNote);
-      } else {
-        this.updateNote(this.$store.state.currentNote);
-      }
+     
     },
     /**
      * Create a new note and focus the note content field automatically
@@ -173,38 +169,12 @@ export default {
      * Create a new note by sending the information to the server
      * @param {Object} note Note object
      */
-    async createNote(note) {
-      this.updating = true;
-      try {
-        const response = await axios.post(
-          generateUrl("/apps/mynotesapp/notes"),
-          note
-        );
-        const index = this.notes.findIndex(
-          (match) => match.id === this.$store.state.currentNote.id
-        );
-        this.$set(this.notes, index, response.data);
-        this.$store.state.currentNote.id = response.data.id;
-      } catch (e) {
-        console.error(e);
-        showError(t("notestutorial", "Could not create the note"));
-      }
-      this.updating = false;
-    },
+    
     /**
      * Update an existing note on the server
      * @param {Object} note Note object
      */
-    async updateNote(note) {
-      this.updating = true;
-      try {
-        await axios.put(generateUrl(`/apps/mynotesapp/notes/${note.id}`), note);
-      } catch (e) {
-        console.error(e);
-        showError(t("notestutorial", "Could not update the note"));
-      }
-      this.updating = false;
-    },
+    
     /**
      * Delete a note, remove it from the frontend and show a hint
      * @param {Object} note Note object

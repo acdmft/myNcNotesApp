@@ -12,6 +12,7 @@ const store = new Store({
       title: "",
       content: "",
     },
+    notes: [],
   },
   mutations: {
     

@@ -19,8 +19,9 @@
         class="primary"
         :value="t('mynotesapp', 'Save')"
         :disabled="updating || !savePossible"
-        @click="handleClick"
+        @click="saveNote"
       />
+      <p>{{ currNote }}</p>
     </div>
     <div v-else id="emptycontent">
       <div class="icon-file" />
@@ -29,6 +30,9 @@
 </template>
 
 <script>
+import axios from "@nextcloud/axios";
+import { showError, showSuccess } from "@nextcloud/dialogs";
+import { generateUrl } from "@nextcloud/router";
 export default {
   name: "NoteForm",
   data() {
@@ -42,6 +46,12 @@ export default {
     // currentNote: null,
     // currentNote: null,
   },
+  computed: {
+    currNote() {
+      return `${this.$store.state.currentNote.title} ${this.$store.state.currentNote.content}`
+    }
+  },
+
   async mounted() {
     console.log('mounted')
     this.$nextTick(() => {
@@ -59,12 +69,47 @@ export default {
       });
     },
     
-    handleClick() {
+    saveNote() {
       // crée l'objet note
       // const note = { note: "valeur", .. }
       // sauvegarde la note dans la liste note qui est partagé entre les composants => Vuex
       // this.store.notes[] = note
-      this.$emit("save-note");
+      if (this.$store.state.currentNote.id === -1) {
+        this.createNote(this.$store.state.currentNote);
+      } else {
+        this.updateNote(this.$store.state.currentNote);
+      }
+      
+    },
+    async createNote(note) {
+      this.updating = true;
+      try {
+        const response = await axios.post(
+          generateUrl("/apps/mynotesapp/notes"),
+          {
+            title: this.$store.state.currentNote.title,
+             content: this.$store.state.currentNote.content}
+        );
+        const index = this.$store.state.notes.findIndex(
+          (match) => match.id === this.$store.state.currentNote.id
+        );
+        this.$set(this.$store.state.notes, index, response.data);
+        this.$store.state.currentNote.id = response.data.id;
+      } catch (e) {
+        console.error(e);
+        showError(t("notestutorial", "Could not create the note"));
+      }
+      this.updating = false;
+    },
+    async updateNote(note) {
+      this.updating = true;
+      try {
+        await axios.put(generateUrl(`/apps/mynotesapp/notes/${note.id}`), note);
+      } catch (e) {
+        console.error(e);
+        showError(t("notestutorial", "Could not update the note"));
+      }
+      this.updating = false;
     },
   },
 };
