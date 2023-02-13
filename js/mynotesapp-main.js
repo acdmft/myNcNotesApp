@@ -19835,14 +19835,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
      * Return the currently selected note object
      * @returns {Object|null}
      */
-    // currentNote() {
+    navItemTitle: function navItemTitle() {
+      return this.$store.state.currentNote.title === "" ? "New note" : this.$store.state.currentNote.title;
+    } // currentNote() {
     //   if (this.currentNoteId === null) {
     //     return null;
     //   }
     //   // this.currentNote = this.notes.find((note) => note.id === this.currentNoteId)
     //   return this.notes.find((note) => note.id === this.currentNoteId);
     // },
-
     /**
      * Returns true if a note is selected and its title is not empty
      * @returns {Boolean}
@@ -19892,7 +19893,6 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
      * Action tiggered when clicking the save button
      * create a new note or save
      */
-    handleNoteSubmit: function handleNoteSubmit() {},
     /**
      * Create a new note and focus the note content field automatically
      * The note is not yet saved, therefore an id of -1 is used until it
@@ -20151,7 +20151,7 @@ var render = function render() {
         active: _vm.$store.state.currentNote.id === note.id
       },
       attrs: {
-        name: note.title ? note.title : _vm.t("mynotesapp", "New note")
+        name: note.title !== "" ? note.title : _vm.navItemTitle
       },
       on: {
         click: function click($event) {
@@ -61170,4 +61170,4 @@ vue__WEBPACK_IMPORTED_MODULE_3__["default"].config.devtools = true;
 
 /******/ })()
 ;
-//# sourceMappingURL=mynotesapp-main.js.map?v=4f43261eb4c3a4db35aa
+//# sourceMappingURL=mynotesapp-main.js.map?v=54a12d83de869887289b
